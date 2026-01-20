@@ -26,9 +26,9 @@ suppressMessages({
 # ---- file nguồn ----
 md_file <- here::here("lang_nghiem_chi.md")
 if (!file.exists(md_file)) stop("Khong thay file: ", md_file)
-
 # ---- hàm ln() ----
-ln <- function(start = 1, end = Inf, delay = 2, show_han = FALSE) {
+ln <- function(start = 1, end = Inf, delay = 2, show_han = FALSE,
+               quiet = FALSE, color_offset = 0) {
   
   lines <- readLines(md_file, encoding = "UTF-8", warn = FALSE)
   
@@ -52,7 +52,9 @@ ln <- function(start = 1, end = Inf, delay = 2, show_han = FALSE) {
   end <- min(n, as.integer(end))
   if (start > end) stop("start > end")
   
-  cat(crayon::bold("Bat dau tung Lang Nghiem tu:"), md_file, "\n\n")
+  if (!quiet) {
+    cat(crayon::bold("Bat dau tung Lang Nghiem tu:"), md_file, "\n\n")
+  }
   
   # ---- chu kỳ 12 màu (PHẦN VIỆT) ----
   colors <- list(
@@ -76,11 +78,12 @@ ln <- function(start = 1, end = Inf, delay = 2, show_han = FALSE) {
   i <- 0
   for (k in start:end) {
     i <- i + 1
-    f <- colors[[ (i - 1) %% 12 + 1 ]]
+    
+    # color_offset giúp màu liền mạch khi gọi nhiều block
+    f <- colors[[ ((color_offset + i - 1) %% 12) + 1 ]]
     
     line <- lines[[k]]
     
-    # Nếu show_han và có dấu # -> tách Việt / Hán để tô màu riêng
     if (show_han && grepl("#", line)) {
       parts <- strsplit(line, "#", fixed = TRUE)[[1]]
       viet <- trimws(parts[1])
@@ -103,34 +106,44 @@ ln <- function(start = 1, end = Inf, delay = 2, show_han = FALSE) {
   invisible(TRUE)
 }
 
-# =========================================
-# lnnc(): như lnn() nhưng HIỆN CẢ CHINESE sau #
-# - GIỮ NGUYÊN màu chu kỳ 12 như ln()/lnn()
-# - "# xám + Chinese cyan" do ln() xử lý
-# lnnc(n)      -> chu kỳ n (12 dòng)
-# lnnc(n1, n2) -> chu kỳ n1..n2
-# =========================================
 
-lnnc <- function(n1, n2 = NULL, delay = 2) {
+# =========================================
+# lnnc(): nhiều chu kỳ 12 dòng (có Chinese)
+# - lnnc(0,1,2) chạy lần lượt chu kỳ 0 rồi 1 rồi 2
+# - lnnc(3:6) chạy 3,4,5,6
+# - giữ màu LIỀN MẠCH xuyên các chu kỳ
+# =========================================
+lnnc <- function(..., delay = 2) {
   
-  if (!is.numeric(n1) || n1 < 0 || n1 != as.integer(n1)) {
-    stop("n1 phai la so nguyen >= 0")
+  cycles <- c(...)
+  if (length(cycles) == 0) stop("Can it nhat 1 chu ky. Vi du: lnnc(0)")
+  
+  cycles <- as.integer(cycles)
+  
+  if (any(is.na(cycles)) || any(cycles < 0)) {
+    stop("Tat ca chu ky phai la so nguyen >= 0. Vi du: lnnc(0,1,2) hoac lnnc(3:6)")
   }
-  if (!is.null(n2)) {
-    if (!is.numeric(n2) || n2 < n1 || n2 != as.integer(n2)) {
-      stop("n2 phai la so nguyen >= n1")
-    }
-  } else {
-    n2 <- n1
+  
+  cat(crayon::bold("Chu ky:"), paste(cycles, collapse = ", "), "\n\n")
+  
+  offset <- 0
+  for (ncy in cycles) {
+    start <- ncy * 12 + 1
+    end   <- ncy * 12 + 12
+    
+    ln(
+      start = start,
+      end   = end,
+      delay = delay,
+      show_han = TRUE,
+      quiet = TRUE,
+      color_offset = offset
+    )
+    
+    # mỗi chu kỳ 12 dòng -> tăng offset 12 để màu liền mạch
+    offset <- offset + 12
   }
   
-  start <- n1 * 12 + 1
-  end   <- n2 * 12 + 12
-  
-  ln(
-    start = start,
-    end   = end,
-    delay = delay,
-    show_han = TRUE
-  )
+  invisible(TRUE)
 }
+
