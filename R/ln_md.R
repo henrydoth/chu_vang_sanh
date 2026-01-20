@@ -28,15 +28,12 @@ suppressMessages({
 md_file <- here::here("lang_nghiem_chi.md")
 if (!file.exists(md_file)) stop("Khong thay file: ", md_file)
 
-# ---- ASCII Đức Phật (in cuối buổi tụng) ----
+# ---- ASCII A Di Đà Phật (gọn, nổi bật) ----
 print_buddha <- function() {
-  cat(crayon::yellow(
-"
-          NAM MÔ A DI ĐÀ PHẬT
-"
-  ))
-  cat("\n")
+  # 1 dòng, không tạo khoảng trống thừa
+  cat(crayon::bold(crayon::yellow("✦ NAM MÔ A DI ĐÀ PHẬT ✦")), "\n")
 }
+
 
 # ---- hàm ln() ----
 ln <- function(start = 1, end = Inf, delay = 2, show_han = FALSE,
