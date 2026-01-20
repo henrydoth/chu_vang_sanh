@@ -70,4 +70,4 @@ lns()
 lnnc(0:9)
 ```
 
-> ✦ NAM MÔ A DI ĐÀ PHẬT ✦
+> ✦ NAM MÔ A DI ĐÀ PHẬT ✦	
