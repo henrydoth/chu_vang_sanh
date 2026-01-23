@@ -239,3 +239,15 @@ reload_lang_nghiem()
 ------
 
 🙏 **Hệ thống này được thiết kế cho hành trì lâu dài: đơn giản – chính xác – dễ mở rộng.**
+## 🔁 R command history (Project-specific)
+
+Project này sử dụng **R history riêng theo project** để dễ khôi phục các lệnh đã chạy.
+
+### Cách hoạt động
+- Các lệnh R trong console được lưu vào file `.Rhistory` (file ẩn, nằm trong thư mục project).
+- Khi mở project `chu_vang_sanh.Rproj`, history sẽ **tự động được nạp lại**.
+- Khi đóng project / thoát RStudio, history sẽ **tự động được lưu**.
+
+### Xem lại lệnh đã chạy
+```r
+history(50)   # xem 50 lệnh gần nhất
