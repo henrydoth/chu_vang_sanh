@@ -130,3 +130,135 @@ Phím:
 ------
 
 ## 
+
+**`README.md`** của project
+ `/Users/mac/Documents/chu_vang_sanh`.
+
+Bạn chỉ cần **copy & paste**.
+
+------
+
+# README.md — Zsh learning notes (b_1, b_2)
+
+## Project
+
+```
+chu_vang_sanh/
+└── zs_h/
+    ├── b_1_hello.zsh
+    └── b_2_echo.zsh
+```
+
+- **Editor**: RStudio (chỉ để edit text)
+- **Runtime**: Terminal macOS
+- **Ngôn ngữ**: Zsh (Z shell)
+
+------
+
+## b_1 — Hello World (Zsh)
+
+### File
+
+```
+zs_h/b_1_hello.zsh
+#!/usr/bin/env zsh
+# b_1: Hello World
+
+echo "Hello, World"
+```
+
+### Chạy
+
+```
+cd zs_h
+chmod +x b_1_hello.zsh   # chỉ cần làm 1 lần
+./b_1_hello.zsh
+```
+
+### Ghi nhớ
+
+- `chmod +x` = cho phép file **được chạy**
+- `./file.zsh` = chạy file trong **thư mục hiện tại**
+- Shell **không tự chạy** file nếu không có `./`
+
+------
+
+## b_2 — Biến & Tham số (phiên bản đơn giản)
+
+### Mục tiêu
+
+- Hiểu **biến**
+- Hiểu **tham số dòng lệnh** (`$1`, `$#`, `$@`)
+
+### File
+
+```
+zs_h/b_2_echo.zsh
+#!/usr/bin/env zsh
+# b_2: variables & arguments (simple)
+
+NAME="Liêm"
+COUNT=2
+
+echo "Xin chào $NAME"
+echo "Số lần: $COUNT"
+echo "---------------------"
+
+echo "Câu niệm: $1"
+echo "Số tham số: $#"
+echo "Tất cả: $@"
+```
+
+### Chạy
+
+Không truyền tham số:
+
+```
+./b_2_echo.zsh
+```
+
+Truyền 1 câu (có khoảng trắng → phải dùng dấu ngoặc kép):
+
+```
+./b_2_echo.zsh "Nam Mô A Di Đà Phật"
+```
+
+### Ghi nhớ quan trọng
+
+- Khai báo biến **không có dấu cách**:
+
+  ```
+  A=1      # đúng
+  A = 1    # sai
+  ```
+
+- Tham số:
+
+  - `$1` : tham số thứ nhất
+  - `$#` : số lượng tham số
+  - `$@` : tất cả tham số
+
+- Chuỗi có dấu cách **bắt buộc** dùng `"..."`
+
+------
+
+## Tổng kết kiến thức đã học
+
+- RStudio chỉ dùng làm **editor**
+
+- Terminal là nơi **chạy thật**
+
+- `.zsh` là **shell script**
+
+- Luồng chuẩn:
+
+  ```
+  edit → chmod +x → ./script.zsh
+  ```
+
+------
+
+## Bài tiếp theo
+
+- **b_3**: đọc phím từ bàn phím (`read`)
+   → nền tảng cho `SPACE / q / ESC` trong các script tụng/niệm
