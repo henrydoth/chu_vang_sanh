@@ -15,6 +15,8 @@ b_5_dai_bi () {
   local IN="${1:-chu_dai_bi.md}"
   local MODE="${2:-manual}"    # manual | auto
   local DELAY="${3:-1.5}"
+  local MANUAL_TIMEOUT="${DB_TIMEOUT:-5}"
+  [[ "$MANUAL_TIMEOUT" =~ '^[0-9]+$' && "$MANUAL_TIMEOUT" -ge 1 ]] || MANUAL_TIMEOUT=5
 
   [[ "$IN" == *.md ]] || IN="${IN}.md"
   local MD_FILE="${MD_DIR}/${IN}"
@@ -35,6 +37,7 @@ b_5_dai_bi () {
   echo "📿 TỤNG | $MD_FILE"
   echo "Mode : $MODE | Delay : ${DELAY}s"
   echo "SPACE / ENTER | q / ESC thoát"
+  echo "Manual timeout: ${MANUAL_TIMEOUT}s (không bấm sẽ tự chạy)"
   echo "----------------------------------------"
 
   local i=0 raw line color key
@@ -50,13 +53,24 @@ b_5_dai_bi () {
     ((i++))
 
     key=""
-    if [[ "$MODE" == auto ]]; then
-      read -r -k 1 -s -t "$DELAY" key </dev/tty 2>/dev/null || true
-    else
-      read -r -k 1 -s key </dev/tty 2>/dev/null || true
-    fi
+    local WAIT_SEC="$MANUAL_TIMEOUT"
+    [[ "$MODE" == auto ]] && WAIT_SEC="$DELAY"
 
-    [[ "$key" == q || "$key" == $'\e' ]] && break
+    # Cơ chế ổn định trên macOS: chờ 1 phím từ /dev/tty tối đa WAIT_SEC giây.
+    # Không bấm gì thì tự qua dòng kế.
+    key="$(perl -e '
+      use IO::Select;
+      my $t = shift;
+      open my $tty, "<", "/dev/tty" or exit 0;
+      my $sel = IO::Select->new($tty);
+      if ($sel->can_read($t)) {
+        my $c = "";
+        sysread($tty, $c, 1);
+        print $c if defined $c;
+      }
+    ' "$WAIT_SEC" 2>/dev/null)"
+
+    [[ "$key" == [qQ] || "$key" == *$'\e'* ]] && break
   done < "$MD_FILE"
 
   echo
