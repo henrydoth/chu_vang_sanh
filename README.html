@@ -352,227 +352,227 @@ display: none;
 </div>
 
 
-<p>Dưới đây là <strong>DANH SÁCH CÁC LỆNH</strong> (ngắn – đúng – dùng
-ngay trong <strong>RStudio Console</strong>):</p>
-<hr />
-<div id="khởi-động-mỗi-lần-mở-restart-r" class="section level2">
-<h2>🚀 Khởi động (mỗi lần mở / Restart R)</h2>
-<pre><code>source(&quot;R/commands.R&quot;, encoding=&quot;UTF-8&quot;)
-lns()</code></pre>
-<hr />
-</div>
-<div id="tụng-lăng-nghiêm" class="section level2">
-<h2>📿 Tụng Lăng Nghiêm</h2>
-<div id="theo-chu-kỳ-12-dòng-có-chữ-hán" class="section level3">
-<h3>🔹 Theo <strong>chu kỳ 12 dòng</strong> (có chữ Hán)</h3>
-<pre><code>lnnc(0)          # chu kỳ 0 (dòng 1–12)
-lnnc(1)          # chu kỳ 1 (dòng 13–24)
-lnnc(0,1,2)      # chu kỳ 0 → 1 → 2
-lnnc(3:6)        # chu kỳ 3,4,5,6
-lnnc(0:9)        # chu kỳ 0–9
-lnnc(0:9, delay=1)</code></pre>
-</div>
-<div id="theo-dòng" class="section level3">
-<h3>🔹 Theo <strong>dòng</strong></h3>
-<pre><code>ln()                         # toàn bộ (không Hán)
-ln(1, 12)                    # dòng 1–12
-ln(1, 12, show_han=TRUE)     # Việt + Hán
-ln(13, 24, delay=1)</code></pre>
-<hr />
-</div>
-</div>
-<div id="kiểm-tra-tiện-ích" class="section level2">
-<h2>🧭 Kiểm tra &amp; tiện ích</h2>
-<pre><code>where()        # xem project root + md_file đang dùng
-reload(&quot;ln&quot;)   # nạp lại ln_md.R
-reload(&quot;vs&quot;)   # nạp lại chu_md.R
-reload(&quot;all&quot;)  # nạp lại tất cả</code></pre>
-<hr />
-</div>
-<div id="chú-vãng-sanh" class="section level2">
-<h2>📦 Chú Vãng Sanh</h2>
-<pre><code>vs()           # chạy hệ Chú Vãng Sanh</code></pre>
-<hr />
-</div>
-<div id="không-dùng" class="section level2">
-<h2>❌ Không dùng</h2>
-<pre><code>pwd()          # ❌ không phải lệnh R</code></pre>
-<hr />
-</div>
-<div id="ghi-nhớ-nhanh" class="section level2">
-<h2>🧠 Ghi nhớ nhanh</h2>
-<pre><code>source(&quot;R/commands.R&quot;)
-lns()
-lnnc(0:9)</code></pre>
-<blockquote>
-<p>✦ NAM MÔ A DI ĐÀ PHẬT ✦</p>
-</blockquote>
-</div>
-<div id="hướng-dẫn-sử-dụng-r-vlc-mp3-books" class="section level1">
-<h1>📿 HƯỚNG DẪN SỬ DỤNG (R + VLC + MP3 Books)</h1>
-<div id="chuẩn-bị" class="section level2">
-<h2>1️⃣ Chuẩn bị</h2>
-<div id="vlc" class="section level3">
-<h3>1. VLC</h3>
+<div id="hướng-dẫn-sử-dụng-usage" class="section level2">
+<h2>📿 Hướng dẫn sử dụng (Usage)</h2>
+<div id="chuẩn-bị" class="section level3">
+<h3>1️⃣ Chuẩn bị</h3>
 <ul>
-<li>Mở <strong>VLC</strong></li>
-<li>Bật <strong>Web Interface</strong>
-<code>VLC → Preferences → Show All → Interface → Main interfaces → tick &quot;Web&quot;</code></li>
-<li>Đặt <strong>Lua HTTP password</strong> (ví dụ:
-<code>1234</code>)</li>
-<li>VLC chạy tại: <code>http://127.0.0.1:8080</code></li>
+<li>Project phải có file
+<strong><code>chu_vang_sanh.Rproj</code></strong></li>
+<li>Cấu trúc tối thiểu:</li>
 </ul>
-</div>
-<div id="file-cần-có-trong-project" class="section level3">
-<h3>2. File cần có trong project</h3>
 <pre><code>chu_vang_sanh/
-├─ lang_nghiem_chi.md          # 187 câu (01. … 187.)
 ├─ R/
-│  └─ vlc_lang_nghiem_bookmarks.R</code></pre>
+│  ├─ run_all.R
+│  ├─ ln_md.R          # tụng Lăng Nghiêm từ Markdown
+│  ├─ niem_nam_mo.R    # niệm Nam mô A Di Đà Phật
+│  └─ vang_sanh_chu.R  # chú Vãng Sanh
+├─ lang_nghiem_chi.md  # nội dung chú Lăng Nghiêm
+├─ phap_khi/
+│  ├─ chuong.mp3
+│  └─ mo.mp3</code></pre>
+<hr />
+</div>
+<div id="nạp-toàn-bộ-hệ-thống-chỉ-cần-1-lệnh" class="section level3">
+<h3>2️⃣ Nạp toàn bộ hệ thống (chỉ cần 1 lệnh)</h3>
+<p>Trong R / RStudio:</p>
+<pre><code>source(&quot;R/run_all.R&quot;)</code></pre>
+<p>Sau đó <strong>các hàm sẽ sẵn sàng dùng ngay</strong>.</p>
 <hr />
 </div>
 </div>
-<div id="khởi-động-trong-r" class="section level2">
-<h2>2️⃣ Khởi động trong R</h2>
-<div id="mở-project" class="section level3">
-<h3>Mở project</h3>
-<pre><code>setwd(&quot;~/Documents/chu_vang_sanh&quot;)</code></pre>
-</div>
-<div id="nạp-toàn-bộ-hệ-thống" class="section level3">
-<h3>Nạp toàn bộ hệ thống</h3>
-<pre><code>source(&quot;R/vlc_lang_nghiem_bookmarks.R&quot;)</code></pre>
-</div>
-<div id="kiểm-tra-đã-load-đủ-187-câu-chưa" class="section level3">
-<h3>Kiểm tra đã load đủ 187 câu chưa</h3>
-<pre><code>check_lang_nghiem()</code></pre>
-<p>Kết quả mong đợi:</p>
-<pre><code>LANG_NGHIEM_LINES: 187 lines</code></pre>
-<hr />
-</div>
-</div>
-<div id="chuẩn-bị-bookmarks-mp3" class="section level2">
-<h2>3️⃣ Chuẩn bị bookmarks MP3</h2>
-<div id="đọc-bookmark-từ-file-text-export-từ-mp3-books" class="section level3">
-<h3>Đọc bookmark từ file text (export từ MP3 Books)</h3>
-<pre><code>bk &lt;- read_bookmarks_mp3books(&quot;R/bookmarks_mp3books.txt&quot;)</code></pre>
-</div>
-<div id="tự-tính-thời-lượng-mỗi-bookmark-chuẩn-nhất" class="section level3">
-<h3>Tự tính thời lượng mỗi bookmark (chuẩn nhất)</h3>
-<pre><code>bk &lt;- add_durations_from_vlc(bk)</code></pre>
-<hr />
-</div>
-</div>
-<div id="các-lệnh-sử-dụng-chính" class="section level2">
-<h2>4️⃣ Các lệnh sử dụng chính</h2>
-<div id="loop-1-đoạn-hiện-12-câu" class="section level3">
-<h3>🔹 Loop 1 đoạn (hiện 12 câu)</h3>
-<pre><code>loop_idx_show(bk, idx = 1, n = 2)</code></pre>
-<p>→ Đoạn 1, lặp 2 vòng</p>
-<hr />
-</div>
-<div id="loop-nhiều-đoạn-liên-tiếp" class="section level3">
-<h3>🔹 Loop nhiều đoạn liên tiếp</h3>
-<pre><code>loop_idxs(bk, 1:3, n = 2)</code></pre>
-<p>→ Đoạn 1 → 2 → 3 → mỗi đoạn lặp 2 vòng</p>
-<hr />
-</div>
-</div>
-<div id="lệnh-chính-loo_p-khuyên-dùng" class="section level2">
-<h2>5️⃣ ⭐ LỆNH CHÍNH: <code>loo_p()</code> (khuyên dùng)</h2>
-<div id="cú-pháp" class="section level3">
-<h3>Cú pháp</h3>
-<pre><code>loo_p(bk, idxs, n = 1, rounds = 1)</code></pre>
-<table>
-<thead>
-<tr class="header">
-<th>Tham số</th>
-<th>Ý nghĩa</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><code>idxs</code></td>
-<td>đoạn muốn tụng (vd: <code>3</code>, <code>1:2</code>,
-<code>c(7,9)</code>)</td>
-</tr>
-<tr class="even">
-<td><code>n</code></td>
-<td>số vòng cho <strong>mỗi đoạn</strong></td>
-</tr>
-<tr class="odd">
-<td><code>rounds</code></td>
-<td>số chu kỳ (lặp cả nhóm đoạn)</td>
-</tr>
-</tbody>
-</table>
-<hr />
-</div>
-<div id="ví-dụ-thực-tế" class="section level3">
-<h3>Ví dụ thực tế</h3>
-<div id="đoạn-1-2-rồi-lặp-lại-thêm-1-vòng" class="section level4">
-<h4>▶️ Đoạn 1 + 2, rồi lặp lại thêm 1 vòng</h4>
-<pre><code>loo_p(bk, 1:2, rounds = 2)</code></pre>
-<p>Thứ tự phát:</p>
-<pre><code>1 → 2 → 1 → 2</code></pre>
-<hr />
-</div>
-<div id="một-đoạn-duy-nhất-nhiều-vòng" class="section level4">
-<h4>▶️ Một đoạn duy nhất, nhiều vòng</h4>
-<pre><code>loo_p(bk, 3, n = 5)</code></pre>
-<p>→ 3 → 3 → 3 → 3 → 3</p>
-<hr />
-</div>
-<div id="nhiều-đoạn-nhiều-vòng-nhiều-chu-kỳ" class="section level4">
-<h4>▶️ Nhiều đoạn, nhiều vòng, nhiều chu kỳ</h4>
-<pre><code>loo_p(bk, 7:9, n = 2, rounds = 3)</code></pre>
-<p>→ (7×2 → 8×2 → 9×2) × 3</p>
-<hr />
-</div>
-</div>
-</div>
-<div id="ghi-chú-quan-trọng" class="section level2">
-<h2>6️⃣ Ghi chú quan trọng</h2>
+<div id="niệm-nam-mô-a-di-đà-phật" class="section level2">
+<h2>🔔 Niệm <em>Nam mô A Di Đà Phật</em></h2>
+<pre><code>niem()</code></pre>
 <ul>
-<li>Mỗi bookmark tương ứng <strong>12 câu</strong></li>
-<li>Bookmark cuối tự động hiện <strong>&lt;12 câu</strong> (vd:
-181–187)</li>
-<li>Nếu sửa <code>lang_nghiem_chi.md</code>, chỉ cần:</li>
+<li>Mặc định: <strong>27 câu</strong></li>
+<li>Có <strong>chuông + mõ</strong></li>
+<li>Phù hợp ban đêm (âm lượng thấp)</li>
 </ul>
-<pre><code>reload_lang_nghiem()</code></pre>
+<p>Ví dụ:</p>
+<pre><code>niem(108)                 # 108 câu
+niem(18, mo_moi_chu=TRUE) # 18 vòng = 108 chữ, mỗi chữ 1 mõ</code></pre>
 <hr />
 </div>
-<div id="gợi-ý-nâng-cao-tuỳ-chọn" class="section level2">
-<h2>7️⃣ Gợi ý nâng cao (tuỳ chọn)</h2>
+<div id="tụng-chú-vãng-sanh" class="section level2">
+<h2>📜 Tụng <em>Chú Vãng Sanh</em></h2>
+<pre><code>vs()        # tiếng Việt
+vs1()       # chữ Hán</code></pre>
+<p>Ví dụ:</p>
+<pre><code>vs(delay = 2)
+vs1(delay = 2)</code></pre>
+<hr />
+</div>
+<div id="tụng-chú-lăng-nghiêm-từ-markdown" class="section level2">
+<h2>🕉️ Tụng <em>Chú Lăng Nghiêm</em> (từ Markdown)</h2>
+<div id="tụng-tự-động" class="section level3">
+<h3>▶️ Tụng tự động</h3>
+<pre><code>ln(1, 12)</code></pre>
+</div>
+<div id="tụng-một-đoạn" class="section level3">
+<h3>▶️ Tụng một đoạn</h3>
+<pre><code>ln(1, 4)          # dòng 1 → 4
+ln(13, 24)        # chu kỳ kế tiếp</code></pre>
+</div>
+<div id="tụng-theo-chu-kỳ-12-dòng" class="section level3">
+<h3>▶️ Tụng theo <strong>chu kỳ 12 dòng</strong></h3>
+<pre><code>lnnc(0)           # chu kỳ đầu
+lnnc(0, 1, 2)     # nhiều chu kỳ</code></pre>
+<hr />
+</div>
+</div>
+<div id="quy-tắc-chuông-mõ-đã-tối-ưu" class="section level2">
+<h2>🎧 Quy tắc chuông – mõ (đã tối ưu)</h2>
 <ul>
-<li><code>quiet = TRUE</code> → chạy im lặng, không in log</li>
-<li>Có thể mở rộng thêm:
+<li>🔔 <strong>Chuông</strong>: mỗi <strong>12 dòng</strong></li>
+<li>🪵 <strong>Mõ</strong>:
 <ul>
-<li>đếm <strong>108 biến</strong></li>
-<li>ghi <strong>log tụng theo ngày</strong></li>
-<li>báo <strong>tổng thời gian</strong></li>
+<li>Mỗi <strong>từ / ký tự = 1 nhịp</strong></li>
+<li><code>Nam-mô</code> → <strong>2 nhịp</strong> (<code>Nam</code> /
+<code>mô</code>)</li>
+<li>Ký tự <code>🙏</code> <strong>không gõ mõ</strong></li>
+<li><strong>Bỏ số thứ tự đầu dòng</strong></li>
+<li>Âm lượng <strong>fade-out</strong> trong 1 dòng → tiếng cuối =
+<code>1/2</code> tiếng đầu</li>
 </ul></li>
+<li>⏱️ Nhịp mặc định:</li>
+</ul>
+<pre><code>mo_interval = 0.80   # có thể chỉnh nhanh/chậm</code></pre>
+<p>Ví dụ:</p>
+<pre><code>ln(1, 12, mo_interval = 1.0)  # tụng chậm, rõ chữ</code></pre>
+<hr />
+</div>
+<div id="chế-độ-điều-khiển-tay-manual" class="section level2">
+<h2>⌨️ Chế độ điều khiển tay (Manual)</h2>
+<pre><code>ln(1, 12, manual = TRUE)</code></pre>
+<p>Phím:</p>
+<ul>
+<li><code>Enter</code> / <code>n</code> : dòng tiếp</li>
+<li><code>p</code> : lùi dòng</li>
+<li><code>q</code> : thoát</li>
 </ul>
 <hr />
-<p>🙏 <strong>Hệ thống này được thiết kế cho hành trì lâu dài: đơn giản
-– chính xác – dễ mở rộng.</strong> ## 🔁 R command history
-(Project-specific)</p>
-<p>Project này sử dụng <strong>R history riêng theo project</strong> để
-dễ khôi phục các lệnh đã chạy.</p>
-<div id="cách-hoạt-động" class="section level3">
-<h3>Cách hoạt động</h3>
+</div>
+<div id="section" class="section level2">
+<h2></h2>
+<p><strong><code>README.md</code></strong> của project
+<code>/Users/mac/Documents/chu_vang_sanh</code>.</p>
+<p>Bạn chỉ cần <strong>copy &amp; paste</strong>.</p>
+<hr />
+</div>
+<div id="readme.md-zsh-learning-notes-b_1-b_2" class="section level1">
+<h1>README.md — Zsh learning notes (b_1, b_2)</h1>
+<div id="project" class="section level2">
+<h2>Project</h2>
+<pre><code>chu_vang_sanh/
+└── zs_h/
+    ├── b_1_hello.zsh
+    └── b_2_echo.zsh</code></pre>
 <ul>
-<li>Các lệnh R trong console được lưu vào file <code>.Rhistory</code>
-(file ẩn, nằm trong thư mục project).</li>
-<li>Khi mở project <code>chu_vang_sanh.Rproj</code>, history sẽ
-<strong>tự động được nạp lại</strong>.</li>
-<li>Khi đóng project / thoát RStudio, history sẽ <strong>tự động được
-lưu</strong>.</li>
+<li><strong>Editor</strong>: RStudio (chỉ để edit text)</li>
+<li><strong>Runtime</strong>: Terminal macOS</li>
+<li><strong>Ngôn ngữ</strong>: Zsh (Z shell)</li>
+</ul>
+<hr />
+</div>
+<div id="b_1-hello-world-zsh" class="section level2">
+<h2>b_1 — Hello World (Zsh)</h2>
+<div id="file" class="section level3">
+<h3>File</h3>
+<pre><code>zs_h/b_1_hello.zsh
+#!/usr/bin/env zsh
+# b_1: Hello World
+
+echo &quot;Hello, World&quot;</code></pre>
+</div>
+<div id="chạy" class="section level3">
+<h3>Chạy</h3>
+<pre><code>cd zs_h
+chmod +x b_1_hello.zsh   # chỉ cần làm 1 lần
+./b_1_hello.zsh</code></pre>
+</div>
+<div id="ghi-nhớ" class="section level3">
+<h3>Ghi nhớ</h3>
+<ul>
+<li><code>chmod +x</code> = cho phép file <strong>được
+chạy</strong></li>
+<li><code>./file.zsh</code> = chạy file trong <strong>thư mục hiện
+tại</strong></li>
+<li>Shell <strong>không tự chạy</strong> file nếu không có
+<code>./</code></li>
+</ul>
+<hr />
+</div>
+</div>
+<div id="b_2-biến-tham-số-phiên-bản-đơn-giản" class="section level2">
+<h2>b_2 — Biến &amp; Tham số (phiên bản đơn giản)</h2>
+<div id="mục-tiêu" class="section level3">
+<h3>Mục tiêu</h3>
+<ul>
+<li>Hiểu <strong>biến</strong></li>
+<li>Hiểu <strong>tham số dòng lệnh</strong> (<code>$1</code>,
+<code>$#</code>, <code>$@</code>)</li>
 </ul>
 </div>
-<div id="xem-lại-lệnh-đã-chạy" class="section level3">
-<h3>Xem lại lệnh đã chạy</h3>
-<p>```r history(50) # xem 50 lệnh gần nhất</p>
+<div id="file-1" class="section level3">
+<h3>File</h3>
+<pre><code>zs_h/b_2_echo.zsh
+#!/usr/bin/env zsh
+# b_2: variables &amp; arguments (simple)
+
+NAME=&quot;Liêm&quot;
+COUNT=2
+
+echo &quot;Xin chào $NAME&quot;
+echo &quot;Số lần: $COUNT&quot;
+echo &quot;---------------------&quot;
+
+echo &quot;Câu niệm: $1&quot;
+echo &quot;Số tham số: $#&quot;
+echo &quot;Tất cả: $@&quot;</code></pre>
 </div>
+<div id="chạy-1" class="section level3">
+<h3>Chạy</h3>
+<p>Không truyền tham số:</p>
+<pre><code>./b_2_echo.zsh</code></pre>
+<p>Truyền 1 câu (có khoảng trắng → phải dùng dấu ngoặc kép):</p>
+<pre><code>./b_2_echo.zsh &quot;Nam Mô A Di Đà Phật&quot;</code></pre>
+</div>
+<div id="ghi-nhớ-quan-trọng" class="section level3">
+<h3>Ghi nhớ quan trọng</h3>
+<ul>
+<li><p>Khai báo biến <strong>không có dấu cách</strong>:</p>
+<pre><code>A=1      # đúng
+A = 1    # sai</code></pre></li>
+<li><p>Tham số:</p>
+<ul>
+<li><code>$1</code> : tham số thứ nhất</li>
+<li><code>$#</code> : số lượng tham số</li>
+<li><code>$@</code> : tất cả tham số</li>
+</ul></li>
+<li><p>Chuỗi có dấu cách <strong>bắt buộc</strong> dùng
+<code>&quot;...&quot;</code></p></li>
+</ul>
+<hr />
+</div>
+</div>
+<div id="tổng-kết-kiến-thức-đã-học" class="section level2">
+<h2>Tổng kết kiến thức đã học</h2>
+<ul>
+<li><p>RStudio chỉ dùng làm <strong>editor</strong></p></li>
+<li><p>Terminal là nơi <strong>chạy thật</strong></p></li>
+<li><p><code>.zsh</code> là <strong>shell script</strong></p></li>
+<li><p>Luồng chuẩn:</p>
+<pre><code>edit → chmod +x → ./script.zsh</code></pre></li>
+</ul>
+<hr />
+</div>
+<div id="bài-tiếp-theo" class="section level2">
+<h2>Bài tiếp theo</h2>
+<ul>
+<li><strong>b_3</strong>: đọc phím từ bàn phím (<code>read</code>) → nền
+tảng cho <code>SPACE / q / ESC</code> trong các script tụng/niệm</li>
+</ul>
 </div>
 </div>
 
