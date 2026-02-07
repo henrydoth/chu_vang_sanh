@@ -1,0 +1,99 @@
+---
+title: "README"
+author: "henry"
+format: html
+editor: visual
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+# Đọc 12 dòng chú đại bi
+
+```{r}
+x <- readLines(here::here("md_files", "chu_dai_bi.md"))
+x <- x[nzchar(trimws(x))]          # bỏ dòng rỗng / chỉ khoảng trắng
+
+k <- 12                            # số dòng muốn lấy
+n <- length(x)
+i <- sample.int(n - k + 1, 1)      # vị trí bắt đầu ngẫu nhiên (đảm bảo đủ k dòng)
+
+doan <- x[i:(i + k - 1)]           # 12 dòng liên tiếp, đúng thứ tự
+cat(doan, sep = "\n")
+
+```
+# 12 dòng Lăng Nghiêm
+```{r}
+ln12 <- function(n12 = NULL, n3 = 0, n4 = 0, time = 1) {
+  x <- readLines(here::here("md_files", "lang_nghiem.md"))
+  x <- x[nzchar(trimws(x))]
+
+  k <- 12
+  N <- length(x)
+  if (N < k) stop("File không đủ 12 dòng.")
+
+  max_n12 <- floor((N - k) / k)
+
+  # nếu không truyền n12 → random 1 block
+  if (is.null(n12)) n12 <- sample.int(max_n12 + 1, 1) - 1
+  n12 <- n12 %% (max_n12 + 1)
+
+  # màu chữ chính: 3 dòng / 1 màu
+  mau_dong <- c(
+    "\033[31m",  # đỏ
+    "\033[34m",  # xanh
+    "\033[37m",  # trắng
+    "\033[33m"   # vàng
+  )
+
+  # màu chữ Hoa sau '#': 3 dòng / 1 màu
+  mau_hash <- c(
+    "\033[37m",  # trắng
+    "\033[33m",  # vàng
+    "\033[31m",  # đỏ
+    "\033[34m"   # xanh
+  )
+
+  mau_xam <- "\033[90m"  # xám cho dấu #
+  reset   <- "\033[0m"
+
+  for (b in seq_along(n12)) {
+    i0 <- 12 * n12[b] + 1
+    doan <- x[i0:(i0 + k - 1)]
+
+    for (i in seq_along(doan)) {
+      block3 <- ((i - 1 + n3 * 3) %/% 3)
+      m_dong <- mau_dong[block3 %% 4 + 1]
+      m_hash <- mau_hash[(block3 + n4) %% 4 + 1]
+
+      line <- doan[i]
+
+      if (grepl("#", line, fixed = TRUE)) {
+        parts <- strsplit(line, "#", fixed = TRUE)[[1]]
+        left  <- trimws(parts[1], "right")
+        right <- trimws(paste(parts[-1], collapse = "#"), "left")
+
+        cat(
+          m_dong, left, reset,
+          " ", mau_xam, "#", reset, " ",
+          m_hash, right, reset,
+          "\n",
+          sep = ""
+        )
+      } else {
+        cat(m_dong, line, reset, "\n", sep = "")
+      }
+
+      Sys.sleep(time)   # ⏱️ nhịp tụng mỗi dòng (mặc định 1s)
+    }
+
+    if (length(n12) > 1 && b < length(n12)) {
+      cat("\n")
+      Sys.sleep(time)
+    }
+  }
+}
+
+```
+
