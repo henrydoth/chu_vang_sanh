@@ -259,5 +259,195 @@ Truyền 1 câu (có khoảng trắng → phải dùng dấu ngoặc kép):
 ## FILE README.qmd
 
 - `ln12()` → đọc 12 dòng Lăng Nghiêm
+
 - `ln12(time = 3)` → đọc chậm
+
 - `ln12(1:3)` → đọc nhiều block
+
+  ## 🧠 CHEAT SHEET – GÕ & SỬA FILE BẰNG R CONSOLE
+
+  ### 📍 Xác định thư mục gốc project
+
+  ```
+  here::here()
+  ```
+
+  ------
+
+  ## 📂 Tạo & xem thư mục / file
+
+  ### Tạo thư mục
+
+  ```
+  dir.create(here::here("tmp"), showWarnings = FALSE)
+  ```
+
+  ### Xem file trong thư mục
+
+  ```
+  dir()
+  list.files()
+  list.files(here::here("md_files"))
+  ```
+
+  ### Kiểm tra file có tồn tại
+
+  ```
+  file.exists(here::here("md_files", "test.md"))
+  ```
+
+  ------
+
+  ## ✍️ Tạo & ghi file
+
+  ### Ghi mới (ghi đè)
+
+  ```
+  writeLines("Nam mô", here::here("tmp", "test.md"))
+  ```
+
+  ### Ghi thêm (append)
+
+  #### Ghi **cùng dòng**
+
+  ```
+  cat(" A di Đà Phật", file = here::here("tmp", "test.md"), append = TRUE)
+  ```
+
+  #### Ghi **xuống dòng**
+
+  ```
+  cat("\nNam mô A Di Đà Phật", file = here::here("tmp", "test.md"), append = TRUE)
+  ```
+
+  📌 Nhớ:
+
+  - `\n` = xuống dòng
+  - `append = TRUE` = ghi thêm, không mất chữ cũ
+
+  ------
+
+  ## 📖 Đọc file
+
+  ```
+  readLines(here::here("tmp", "test.md"))
+  ```
+
+  ------
+
+  ## ✏️ SỬA FILE BẰNG CONSOLE (QUAN TRỌNG NHẤT)
+
+  ### Quy tắc vàng
+
+  > **Không sửa trực tiếp file**
+  >  → luôn: **đọc → sửa vector → ghi lại**
+
+  ------
+
+  ### Gán đường dẫn cho nhanh
+
+  ```
+  f <- here::here("md_files", "ke_tan_a_di.md")
+  ```
+
+  ------
+
+  ### Đọc file vào R
+
+  ```
+  x <- readLines(f)
+  ```
+
+  ------
+
+  ### ✏️ Sửa **1 dòng theo số dòng**
+
+  ```
+  x[3] <- "Bốn mươi tám nguyện viên thành"
+  writeLines(x, f)
+  ```
+
+  ------
+
+  ### ✏️ Sửa **1 chữ trong dòng**
+
+  ```
+  x[6] <- gsub("dậc", "bậc", x[6])
+  writeLines(x, f)
+  ```
+
+  ------
+
+  ### ✏️ Sửa theo **nội dung** (không nhớ số dòng)
+
+  ```
+  x[x == "Bốn mươi tám"] <- "Bốn mươi tám nguyện viên thành"
+  writeLines(x, f)
+  ```
+
+  ------
+
+  ## ❌ Xóa dòng
+
+  ### Xóa dòng theo số dòng
+
+  ```
+  x <- readLines(f)
+  x <- x[-5]
+  writeLines(x, f)
+  ```
+
+  ### Xóa dòng trùng (giữ dòng đầu)
+
+  ```
+  x <- readLines(f)
+  x <- x[!duplicated(x)]
+  writeLines(x, f)
+  ```
+
+  ------
+
+  ## 🧹 Xử lý xuống dòng `\n`
+
+  ### Gộp nhiều dòng thành 1 dòng
+
+  ```
+  x <- readLines(f)
+  writeLines(paste(x, collapse = " "), f)
+  ```
+
+  ### Xóa dòng trống
+
+  ```
+  x <- readLines(f)
+  x <- x[nzchar(trimws(x))]
+  writeLines(x, f)
+  ```
+
+  ------
+
+  ## 🔐 Backup nhanh (thói quen tốt)
+
+  ```
+  file.copy(f, paste0(f, ".bak"), overwrite = TRUE)
+  ```
+
+  ------
+
+  ## 🚫 KHÔNG DÙNG
+
+  ```
+  setwd("...")
+  ```
+
+  ------
+
+  ## 🧘 TÓM TẮT 5 PHẢN XẠ VÀNG
+
+  | Việc            | Lệnh                       |
+  | --------------- | -------------------------- |
+  | Biết mình ở đâu | `here::here()`             |
+  | Ghi file mới    | `writeLines()`             |
+  | Ghi thêm        | `cat(..., append=TRUE)`    |
+  | Đọc file        | `readLines()`              |
+  | Sửa             | đọc → sửa → `writeLines()` |

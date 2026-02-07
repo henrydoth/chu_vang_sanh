@@ -9,22 +9,33 @@ execute:
   message: false
 ---
 
-# Đọc 12 dòng chú đại bi
-
 ```{r}
-x <- readLines(here::here("md_files", "chu_dai_bi.md"))
-x <- x[nzchar(trimws(x))]          # bỏ dòng rỗng / chỉ khoảng trắng
+#| label: setup
+#| include: false
 
-k <- 12                            # số dòng muốn lấy
-n <- length(x)
-i <- sample.int(n - k + 1, 1)      # vị trí bắt đầu ngẫu nhiên (đảm bảo đủ k dòng)
+# 1) Bảo đảm here dùng đúng root project
+# (Bạn đang có .Rproj nên here::here() tự đúng)
 
-doan <- x[i:(i + k - 1)]           # 12 dòng liên tiếp, đúng thứ tự
-cat(doan, sep = "\n")
+# 2) Hàm đọc 12 dòng Chú Đại Bi (random 12 dòng liên tiếp)
+db12 <- function(time = 0) {
+  x <- readLines(here::here("md_files", "chu_dai_bi.md"))
+  x <- x[nzchar(trimws(x))]
 
-```
-# 12 dòng Lăng Nghiêm
-```{r}
+  k <- 12
+  n <- length(x)
+  if (n < k) stop("File chu_dai_bi.md không đủ 12 dòng.")
+  i <- sample.int(n - k + 1, 1)
+  doan <- x[i:(i + k - 1)]
+
+  for (j in seq_along(doan)) {
+    cat(doan[j], "\n", sep = "")
+    if (time > 0) Sys.sleep(time)
+  }
+
+  invisible(NULL)
+}
+
+# 3) Hàm 12 dòng Lăng Nghiêm (giữ code bạn chốt)
 ln12 <- function(n12 = NULL, n3 = 0, n4 = 0, time = 1) {
   x <- readLines(here::here("md_files", "lang_nghiem.md"))
   x <- x[nzchar(trimws(x))]
@@ -40,20 +51,10 @@ ln12 <- function(n12 = NULL, n3 = 0, n4 = 0, time = 1) {
   n12 <- n12 %% (max_n12 + 1)
 
   # màu chữ chính: 3 dòng / 1 màu
-  mau_dong <- c(
-    "\033[31m",  # đỏ
-    "\033[34m",  # xanh
-    "\033[37m",  # trắng
-    "\033[33m"   # vàng
-  )
+  mau_dong <- c("\033[31m", "\033[34m", "\033[37m", "\033[33m")
 
   # màu chữ Hoa sau '#': 3 dòng / 1 màu
-  mau_hash <- c(
-    "\033[37m",  # trắng
-    "\033[33m",  # vàng
-    "\033[31m",  # đỏ
-    "\033[34m"   # xanh
-  )
+  mau_hash <- c("\033[37m", "\033[33m", "\033[31m", "\033[34m")
 
   mau_xam <- "\033[90m"  # xám cho dấu #
   reset   <- "\033[0m"
@@ -85,7 +86,7 @@ ln12 <- function(n12 = NULL, n3 = 0, n4 = 0, time = 1) {
         cat(m_dong, line, reset, "\n", sep = "")
       }
 
-      Sys.sleep(time)   # ⏱️ nhịp tụng mỗi dòng (mặc định 1s)
+      Sys.sleep(time)   # nhịp tụng mỗi dòng
     }
 
     if (length(n12) > 1 && b < length(n12)) {
@@ -93,7 +94,7 @@ ln12 <- function(n12 = NULL, n3 = 0, n4 = 0, time = 1) {
       Sys.sleep(time)
     }
   }
+
+  invisible(NULL)
 }
-
 ```
-
