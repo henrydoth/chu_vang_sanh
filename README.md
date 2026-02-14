@@ -1,4 +1,129 @@
-## 📿 Hướng dẫn sử dụng (Usage)
+Máy mới chỉ cần:
+
+```
+ln 13
+ln 13 24
+lnk "tát đát"
+```
+
+# 1️⃣ Máy Windows kia phải dùng Git Bash
+
+Script của thầy là:
+
+```
+#!/usr/bin/env bash
+```
+
+→ Nó chạy trong **Git Bash / MINGW64**,
+ không chạy trong:
+
+- ❌ CMD
+- ❌ PowerShell thuần
+
+👉 Chỉ cần cài Git for Windows là OK.
+
+------
+
+# ✅ 2️⃣ Phải source file trong `.bashrc`
+
+Trên máy mới:
+
+### Bước 1 – clone repo
+
+```
+git clone https://github.com/henrydoth/chu_vang_sanh.git
+cd chu_vang_sanh
+```
+
+------
+
+### Bước 2 – source script
+
+Giả sử file nằm ở:
+
+```
+/d/GitHub/chu_vang_sanh/ln_lang_nghiem.bash
+```
+
+Thêm vào `~/.bashrc`:
+
+```
+source /d/GitHub/chu_vang_sanh/ln_lang_nghiem.bash
+```
+
+Sau đó:
+
+```
+source ~/.bashrc
+```
+
+------
+
+# ✅✅ 1️⃣ Máy Windows khác
+
+### Điều kiện:
+
+- Có **Git for Windows (Git Bash)**
+- Hoặc có **WSL (Ubuntu)**
+
+### Cách dùng:
+
+1. Clone repo từ GitHub
+2. Vào thư mục
+3. `source ln_lang_nghiem.bash`
+4. Gõ:
+
+```
+ln 13
+lnk "tát đát"
+```
+
+👉 Chạy bình thường trong **Git Bash**
+
+⚠ Không chạy trong CMD hoặc PowerShell thuần (trừ khi vào WSL)
+
+------
+
+# ✅ 2️⃣ MacBook
+
+MacOS mặc định có:
+
+- bash
+- zsh
+- sed
+- grep
+- stty
+
+👉 Script của thầy **100% tương thích**
+
+Chỉ cần:
+
+```
+chmod +x ln_lang_nghiem.bash
+source ln_lang_nghiem.bash
+```
+
+Hoặc thêm vào `~/.zshrc`:
+
+```
+source /path/to/ln_lang_nghiem.bash
+```
+
+Sau đó mở terminal là dùng được.
+
+
+
+
+
+
+
+
+
+
+
+
+
+## 📿 Hướng dẫn sử dụng R trên mac, win
 
 ### 1️⃣ Chuẩn bị
 
