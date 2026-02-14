@@ -166,3 +166,20 @@ ln () {
     command ln "$@"
   fi
 }
+
+# ---------------------------------------------------------
+# 📌 Quick hint (hiện khi source file)
+# ---------------------------------------------------------
+echo ""
+echo "📿 Lang Nghiem ready."
+echo "   ln            → 12 câu đầu"
+echo "   ln 12         → 1→12"
+echo "   ln 12 17      → 12→17"
+echo "   ln 157        → 157→168"
+echo ""
+
+
+# alias nạp source 
+alias sz='source ~/.bashrc && echo "🔄 ~/.bashrc reloaded"'
+
+
