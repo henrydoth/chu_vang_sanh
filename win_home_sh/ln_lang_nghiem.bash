@@ -2,8 +2,8 @@
 # ==========================================
 # ln_lang_nghiem.bash (SIMPLE + KEYWORD PICK)
 # Usage:
-#   ln 13
-#   ln 13 27
+#   ln 13            # 13 -> 24 (auto block 12)
+#   ln 13 27         # 13 -> 27 (giữ kiểu cũ)
 #   lnk "tát đát"     # liệt kê match -> chọn -> tụng tới hết block 12
 # Keys while chanting:
 #   any key = next
@@ -45,15 +45,29 @@ _ln_color_han() {
 
 # ==========================================
 # ln: tụng theo số
+# - ln N      -> N → bội 12 kế tiếp (vd 2→12, 13→24)
+# - ln A B    -> A → B (giữ kiểu cũ)
 # ==========================================
 ln() {
   local start="${1:-1}"
-  local end="${2:-$start}"
+  local end="${2:-0}"
 
   [[ -f "$LN_FILE" ]] || { echo "❌ Không thấy file: $LN_FILE"; return 1; }
   [[ "$start" =~ ^[0-9]+$ ]] || { echo "❌ start phải là số"; return 1; }
-  [[ "$end" =~ ^[0-9]+$ ]] || { echo "❌ end phải là số"; return 1; }
+  [[ "$end"   =~ ^[0-9]+$ ]] || { echo "❌ end phải là số"; return 1; }
 
+  # Nếu không nhập end (end=0) -> chạy tới bội số 12 kế tiếp
+  if (( end == 0 )); then
+    end=$(( ((start - 1) / 12 + 1) * 12 ))
+  fi
+
+  # Không cho end vượt quá số dòng thực tế
+  local total
+  total="$(wc -l < "$LN_FILE" 2>/dev/null)"
+  [[ "$total" =~ ^[0-9]+$ ]] || total=0
+  (( total > 0 && end > total )) && end="$total"
+
+  # Nếu nhập ngược thì đảo lại
   if (( end < start )); then
     local tmp="$start"; start="$end"; end="$tmp"
   fi
