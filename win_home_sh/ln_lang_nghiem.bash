@@ -141,12 +141,22 @@ ln() {
   ranges=( "${fixed_ranges[@]}" )
   (( ${#ranges[@]} == 0 )) && { echo "❌ Không có đoạn hợp lệ để tụng."; return 1; }
 
-  # ---- Header 1 lần ----
+  # ---- Header 1 lần (+ thêm Block info) ----
   clear
   echo "📿 TỤNG KINH / CHÚ LĂNG NGHIÊM"
   echo "File: $LN_FILE"
   if (( ${#ranges[@]} == 1 )); then
-    echo "Từ câu: ${ranges[0]%%:*} → ${ranges[0]##*:}"
+    local rs="${ranges[0]%%:*}"
+    local re="${ranges[0]##*:}"
+    echo "Từ câu: $rs → $re"
+
+    local b_start=$(( (rs - 1) / 12 ))
+    local b_end=$(( (re - 1) / 12 ))
+    if (( b_start == b_end )); then
+      echo "Block: ${b_start}*12"
+    else
+      echo "Block: ${b_start}*12 → ${b_end}*12"
+    fi
   else
     echo "Đoạn tụng:"
     for r in "${ranges[@]}"; do
