@@ -2,8 +2,14 @@
 # ==========================================
 # ln_lang_nghiem.bash (SIMPLE + KEYWORD PICK)
 # Usage:
-#   ln 13            # 13 -> 24 (auto block 12)
-#   ln 13 27         # 13 -> 27 (giữ kiểu cũ)
+#   ln 13             # 13 -> 24 (auto block 12)
+#   ln 13 27          # 13 -> 27 (giữ kiểu cũ)
+#   ln 0*             # 1  -> 12   (block 0)
+#   ln 1*             # 13 -> 24   (block 1)
+#   ln 2*             # 25 -> 36   (block 2)
+#   ln 3*             # 37 -> 48   (block 3)
+#   ln 0* 1* 2*       # gộp nhiều block, hiển thị LIỀN MẠCH (vd 1→36)
+#   ln 0*:2*          # range block: block 0 tới 2 (vd 1→36)
 #   lnk "tát đát"     # liệt kê match -> chọn -> tụng tới hết block 12
 # Keys while chanting:
 #   any key = next
@@ -45,76 +51,188 @@ _ln_color_han() {
 
 # ==========================================
 # ln: tụng theo số
-# - ln N      -> N → bội 12 kế tiếp (vd 2→12, 13→24)
-# - ln A B    -> A → B (giữ kiểu cũ)
+# - ln N          -> N → bội 12 kế tiếp (vd 2→12, 13→24)
+# - ln A B        -> A → B (giữ kiểu cũ)
+# - ln K*         -> block K (0* = 1→12; 1* = 13→24; 2* = 25→36; ...)
+# - ln 0* 1* 2*   -> gộp nhiều block và tụng LIỀN MẠCH (vd 1→36)
+# - ln 0*:2*      -> range block K*:M* (vd 1→36)
 # ==========================================
 ln() {
-  local start="${1:-1}"
-  local end="${2:-0}"
-
   [[ -f "$LN_FILE" ]] || { echo "❌ Không thấy file: $LN_FILE"; return 1; }
-  [[ "$start" =~ ^[0-9]+$ ]] || { echo "❌ start phải là số"; return 1; }
-  [[ "$end"   =~ ^[0-9]+$ ]] || { echo "❌ end phải là số"; return 1; }
 
-  # Nếu không nhập end (end=0) -> chạy tới bội số 12 kế tiếp
-  if (( end == 0 )); then
-    end=$(( ((start - 1) / 12 + 1) * 12 ))
+  # ==========================================================
+  # MODE 0: range block K*:M*  (vd ln 0*:2* -> 1→36)
+  # ==========================================================
+  if [[ "${1:-}" =~ ^([0-9]+)\*:([0-9]+)\*$ ]]; then
+    local b1="${BASH_REMATCH[1]}"
+    local b2="${BASH_REMATCH[2]}"
+    if (( b2 < b1 )); then
+      local tmp="$b1"; b1="$b2"; b2="$tmp"
+    fi
+    local rs=$(( b1 * 12 + 1 ))
+    local re=$(( (b2 + 1) * 12 ))
+    # gọi lại ln theo chế độ số, để dùng chung toàn bộ logic in liền mạch
+    ln "$rs" "$re"
+    return 0
   fi
 
-  # Không cho end vượt quá số dòng thực tế
+  # ==========================================================
+  # MODE 1: gộp nhiều block: ln 0* 1* 2*
+  # - chỉ kích hoạt khi TẤT CẢ tham số là dạng K*
+  # - gộp block liên tiếp thành 1 đoạn để hiển thị liền mạch
+  # ==========================================================
+  local all_block_mode=true
+  if (( $# == 0 )); then
+    all_block_mode=false
+  else
+    for arg in "$@"; do
+      [[ "$arg" =~ ^[0-9]+\*$ ]] || { all_block_mode=false; break; }
+    done
+  fi
+
+  # ranges: mảng các đoạn "start:end"
+  local ranges=()
+
+  if [[ "$all_block_mode" == true ]]; then
+    # sort + uniq các block
+    local blocks_sorted
+    blocks_sorted="$(printf "%s\n" "$@" | sed 's/\*$//' | sort -n | uniq)"
+
+    local first=1 cur_s=0 cur_e=0 b s e
+    while IFS= read -r b; do
+      [[ -n "$b" ]] || continue
+      s=$(( b * 12 + 1 ))
+      e=$(( s + 11 ))
+
+      if (( first == 1 )); then
+        cur_s=$s; cur_e=$e; first=0
+      else
+        # nếu nối tiếp (hoặc chồng) thì gộp
+        if (( s <= cur_e + 1 )); then
+          (( e > cur_e )) && cur_e=$e
+        else
+          ranges+=( "${cur_s}:${cur_e}" )
+          cur_s=$s; cur_e=$e
+        fi
+      fi
+    done <<< "$blocks_sorted"
+    (( first == 0 )) && ranges+=( "${cur_s}:${cur_e}" )
+
+  else
+    # ==========================================================
+    # MODE 2: bình thường: ln N / ln A B / ln K*
+    # ==========================================================
+    local start="${1:-1}"
+    local end="${2:-0}"
+
+    # Hỗ trợ ln K* (1 block)
+    if [[ "$start" =~ ^([0-9]+)\*$ ]]; then
+      local block="${BASH_REMATCH[1]}"
+      start=$(( block * 12 + 1 ))
+      end=$(( start + 11 ))
+    fi
+
+    [[ "$start" =~ ^[0-9]+$ ]] || { echo "❌ start phải là số hoặc dạng K* (vd 0*, 1*, 2*)"; return 1; }
+    [[ "$end"   =~ ^[0-9]+$ ]] || { echo "❌ end phải là số"; return 1; }
+
+    # Nếu không nhập end (end=0) -> chạy tới bội số 12 kế tiếp
+    if (( end == 0 )); then
+      end=$(( ((start - 1) / 12 + 1) * 12 ))
+    fi
+
+    # Nếu nhập ngược thì đảo xem như ln A B
+    if (( end < start )); then
+      local tmp="$start"; start="$end"; end="$tmp"
+    fi
+
+    ranges+=( "${start}:${end}" )
+  fi
+
+  # ==========================================================
+  # Giới hạn theo tổng số dòng thực tế
+  # ==========================================================
   local total
   total="$(wc -l < "$LN_FILE" 2>/dev/null)"
   [[ "$total" =~ ^[0-9]+$ ]] || total=0
-  (( total > 0 && end > total )) && end="$total"
 
-  # Nếu nhập ngược thì đảo lại
-  if (( end < start )); then
-    local tmp="$start"; start="$end"; end="$tmp"
-  fi
+  local fixed_ranges=() r rs re
+  for r in "${ranges[@]}"; do
+    rs="${r%%:*}"
+    re="${r##*:}"
+    (( total > 0 && re > total )) && re="$total"
+    (( total > 0 && rs > total )) && continue
+    fixed_ranges+=( "${rs}:${re}" )
+  done
+  ranges=( "${fixed_ranges[@]}" )
+  (( ${#ranges[@]} == 0 )) && { echo "❌ Không có đoạn hợp lệ để tụng."; return 1; }
 
+  # ==========================================================
+  # Header 1 lần duy nhất
+  # ==========================================================
   clear
   echo "📿 TỤNG KINH / CHÚ LĂNG NGHIÊM"
   echo "File: $LN_FILE"
-  echo "Từ câu: $start → $end"
+  if (( ${#ranges[@]} == 1 )); then
+    echo "Từ câu: ${ranges[0]%%:*} → ${ranges[0]##*:}"
+  else
+    echo "Đoạn tụng:"
+    for r in "${ranges[@]}"; do
+      echo "  - ${r%%:*} → ${r##*:}"
+    done
+  fi
   echo "Phím bất kỳ: câu kế | q/ESC: thoát"
   echo "----------------------------------------"
 
-  local i raw main han key c_main c_han
+  local i raw main han key c_main c_han stop
+  stop=0
   trap 'stty echo < /dev/tty 2>/dev/null' EXIT
 
-  for (( i=start; i<=end; i++ )); do
-    raw="$(sed -n "${i}p" "$LN_FILE")"
+  # ==========================================================
+  # In LIỀN MẠCH theo ranges (không clear giữa các khối)
+  # ==========================================================
+  for r in "${ranges[@]}"; do
+    local start="${r%%:*}"
+    local end="${r##*:}"
 
-    if [[ -z "${raw//[[:space:]]/}" ]]; then
-      echo "${_gray}$(printf "%03d" "$i"). (trống)${_reset}"
-    else
-      main="${raw%%#*}"
-      han=""
-      [[ "$raw" == *"#"* ]] && han="${raw#*#}"
+    for (( i=start; i<=end; i++ )); do
+      raw="$(sed -n "${i}p" "$LN_FILE")"
 
-      main="$(echo "$main" | sed -E 's/^[[:space:]]*[0-9]+[.)][[:space:]]*//')"
+      if [[ -z "${raw//[[:space:]]/}" ]]; then
+        echo "${_gray}$(printf "%03d" "$i"). (trống)${_reset}"
+      else
+        main="${raw%%#*}"
+        han=""
+        [[ "$raw" == *"#"* ]] && han="${raw#*#}"
 
-      c_main="$(_ln_color_main "$i")"
-      c_han="$(_ln_color_han "$i")"
+        main="$(echo "$main" | sed -E 's/^[[:space:]]*[0-9]+[.)][[:space:]]*//')"
 
-      printf "%s%03d.%s %s%s%s%s" \
-        "$_gray" "$i" "$_reset" \
-        "$_bold" "$c_main" "$main" "$_reset"
+        c_main="$(_ln_color_main "$i")"
+        c_han="$(_ln_color_han "$i")"
 
-      if [[ -n "${han//[[:space:]]/}" ]]; then
-        printf " %s#%s %s%s%s%s" \
-          "$_gray" "$_reset" \
-          "$_bold" "$c_han" "$han" "$_reset"
+        printf "%s%03d.%s %s%s%s%s" \
+          "$_gray" "$i" "$_reset" \
+          "$_bold" "$c_main" "$main" "$_reset"
+
+        if [[ -n "${han//[[:space:]]/}" ]]; then
+          printf " %s#%s %s%s%s%s" \
+            "$_gray" "$_reset" \
+            "$_bold" "$c_han" "$han" "$_reset"
+        fi
+        printf "\n"
       fi
-      printf "\n"
-    fi
 
-    key=""
-    stty -echo < /dev/tty 2>/dev/null
-    IFS= read -r -n 1 key < /dev/tty 2>/dev/null || true
-    stty echo < /dev/tty 2>/dev/tty 2>/dev/null || true
+      key=""
+      stty -echo < /dev/tty 2>/dev/null
+      IFS= read -r -n 1 key < /dev/tty 2>/dev/null || true
+      stty echo < /dev/tty 2>/dev/null || true
 
-    [[ "$key" == $'\e' || "$key" == "q" || "$key" == "Q" ]] && break
+      if [[ "$key" == $'\e' || "$key" == "q" || "$key" == "Q" ]]; then
+        stop=1
+        break
+      fi
+    done
+
+    (( stop == 1 )) && break
   done
 
   echo
