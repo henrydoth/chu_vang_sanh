@@ -60,27 +60,18 @@ _ln_color_han() {
 ln() {
   [[ -f "$LN_FILE" ]] || { echo "❌ Không thấy file: $LN_FILE"; return 1; }
 
-  # ==========================================================
-  # MODE 0: range block K*:M*  (vd ln 0*:2* -> 1→36)
-  # ==========================================================
+  # ---- Range block: ln K*:M* ----
   if [[ "${1:-}" =~ ^([0-9]+)\*:([0-9]+)\*$ ]]; then
-    local b1="${BASH_REMATCH[1]}"
-    local b2="${BASH_REMATCH[2]}"
-    if (( b2 < b1 )); then
-      local tmp="$b1"; b1="$b2"; b2="$tmp"
-    fi
-    local rs=$(( b1 * 12 + 1 ))
-    local re=$(( (b2 + 1) * 12 ))
-    # gọi lại ln theo chế độ số, để dùng chung toàn bộ logic in liền mạch
-    ln "$rs" "$re"
+    local b1="${BASH_REMATCH[1]}" b2="${BASH_REMATCH[2]}"
+    (( b2 < b1 )) && { local t="$b1"; b1="$b2"; b2="$t"; }
+    ln "$(( b1*12 + 1 ))" "$(( (b2+1)*12 ))"
     return 0
   fi
 
-  # ==========================================================
-  # MODE 1: gộp nhiều block: ln 0* 1* 2*
-  # - chỉ kích hoạt khi TẤT CẢ tham số là dạng K*
-  # - gộp block liên tiếp thành 1 đoạn để hiển thị liền mạch
-  # ==========================================================
+  # ranges: mảng các đoạn "start:end"
+  local ranges=()
+
+  # ---- Multi-block: ln 0* 1* 2* (LIỀN MẠCH) ----
   local all_block_mode=true
   if (( $# == 0 )); then
     all_block_mode=false
@@ -90,11 +81,7 @@ ln() {
     done
   fi
 
-  # ranges: mảng các đoạn "start:end"
-  local ranges=()
-
   if [[ "$all_block_mode" == true ]]; then
-    # sort + uniq các block
     local blocks_sorted
     blocks_sorted="$(printf "%s\n" "$@" | sed 's/\*$//' | sort -n | uniq)"
 
@@ -107,7 +94,6 @@ ln() {
       if (( first == 1 )); then
         cur_s=$s; cur_e=$e; first=0
       else
-        # nếu nối tiếp (hoặc chồng) thì gộp
         if (( s <= cur_e + 1 )); then
           (( e > cur_e )) && cur_e=$e
         else
@@ -119,13 +105,10 @@ ln() {
     (( first == 0 )) && ranges+=( "${cur_s}:${cur_e}" )
 
   else
-    # ==========================================================
-    # MODE 2: bình thường: ln N / ln A B / ln K*
-    # ==========================================================
+    # ---- Normal: ln N / ln A B / ln K* ----
     local start="${1:-1}"
     local end="${2:-0}"
 
-    # Hỗ trợ ln K* (1 block)
     if [[ "$start" =~ ^([0-9]+)\*$ ]]; then
       local block="${BASH_REMATCH[1]}"
       start=$(( block * 12 + 1 ))
@@ -135,30 +118,22 @@ ln() {
     [[ "$start" =~ ^[0-9]+$ ]] || { echo "❌ start phải là số hoặc dạng K* (vd 0*, 1*, 2*)"; return 1; }
     [[ "$end"   =~ ^[0-9]+$ ]] || { echo "❌ end phải là số"; return 1; }
 
-    # Nếu không nhập end (end=0) -> chạy tới bội số 12 kế tiếp
     if (( end == 0 )); then
       end=$(( ((start - 1) / 12 + 1) * 12 ))
     fi
 
-    # Nếu nhập ngược thì đảo xem như ln A B
-    if (( end < start )); then
-      local tmp="$start"; start="$end"; end="$tmp"
-    fi
-
+    (( end < start )) && { local t="$start"; start="$end"; end="$t"; }
     ranges+=( "${start}:${end}" )
   fi
 
-  # ==========================================================
-  # Giới hạn theo tổng số dòng thực tế
-  # ==========================================================
+  # ---- Clamp theo số dòng ----
   local total
   total="$(wc -l < "$LN_FILE" 2>/dev/null)"
   [[ "$total" =~ ^[0-9]+$ ]] || total=0
 
   local fixed_ranges=() r rs re
   for r in "${ranges[@]}"; do
-    rs="${r%%:*}"
-    re="${r##*:}"
+    rs="${r%%:*}"; re="${r##*:}"
     (( total > 0 && re > total )) && re="$total"
     (( total > 0 && rs > total )) && continue
     fixed_ranges+=( "${rs}:${re}" )
@@ -166,9 +141,7 @@ ln() {
   ranges=( "${fixed_ranges[@]}" )
   (( ${#ranges[@]} == 0 )) && { echo "❌ Không có đoạn hợp lệ để tụng."; return 1; }
 
-  # ==========================================================
-  # Header 1 lần duy nhất
-  # ==========================================================
+  # ---- Header 1 lần ----
   clear
   echo "📿 TỤNG KINH / CHÚ LĂNG NGHIÊM"
   echo "File: $LN_FILE"
@@ -183,13 +156,9 @@ ln() {
   echo "Phím bất kỳ: câu kế | q/ESC: thoát"
   echo "----------------------------------------"
 
-  local i raw main han key c_main c_han stop
-  stop=0
+  local i raw main han key c_main c_han stop=0
   trap 'stty echo < /dev/tty 2>/dev/null' EXIT
 
-  # ==========================================================
-  # In LIỀN MẠCH theo ranges (không clear giữa các khối)
-  # ==========================================================
   for r in "${ranges[@]}"; do
     local start="${r%%:*}"
     local end="${r##*:}"
@@ -198,18 +167,17 @@ ln() {
       raw="$(sed -n "${i}p" "$LN_FILE")"
 
       if [[ -z "${raw//[[:space:]]/}" ]]; then
-        echo "${_gray}$(printf "%03d" "$i"). (trống)${_reset}"
+        echo "${_gray}$(printf "%d" "$i"). (trống)${_reset}"
       else
         main="${raw%%#*}"
         han=""
         [[ "$raw" == *"#"* ]] && han="${raw#*#}"
-
         main="$(echo "$main" | sed -E 's/^[[:space:]]*[0-9]+[.)][[:space:]]*//')"
 
         c_main="$(_ln_color_main "$i")"
         c_han="$(_ln_color_han "$i")"
 
-        printf "%s%03d.%s %s%s%s%s" \
+        printf "%s%d.%s %s%s%s%s" \
           "$_gray" "$i" "$_reset" \
           "$_bold" "$c_main" "$main" "$_reset"
 
@@ -221,7 +189,6 @@ ln() {
         printf "\n"
       fi
 
-      key=""
       stty -echo < /dev/tty 2>/dev/null
       IFS= read -r -n 1 key < /dev/tty 2>/dev/null || true
       stty echo < /dev/tty 2>/dev/null || true
@@ -231,7 +198,6 @@ ln() {
         break
       fi
     done
-
     (( stop == 1 )) && break
   done
 
@@ -247,19 +213,16 @@ lnk() {
   [[ -n "${kw//[[:space:]]/}" ]] || { echo '❌ Nhập từ khoá. Ví dụ: lnk "tát đát"'; return 1; }
   [[ -f "$LN_FILE" ]] || { echo "❌ Không thấy file: $LN_FILE"; return 1; }
 
-  # Liệt kê tất cả match (line_no:line_text)
   local matches
   matches="$(grep -in -- "$kw" "$LN_FILE" 2>/dev/null | head -n 200)"
   [[ -n "$matches" ]] || { echo "❌ Không tìm thấy: $kw"; return 1; }
 
   echo "🔎 Tìm thấy các câu có: \"$kw\""
   echo "----------------------------------------"
-  # In gọn: 003. <đoạn trước #>
   echo "$matches" | while IFS=: read -r n line; do
-    # lấy phần trước # cho gọn
     local before="${line%%#*}"
     before="$(echo "$before" | sed -E 's/^[[:space:]]*[0-9]+[.)][[:space:]]*//')"
-    printf "%s%03d%s  %s\n" "$_gray" "$n" "$_reset" "$before"
+    printf "%s%d%s  %s\n" "$_gray" "$n" "$_reset" "$before"
   done
   echo "----------------------------------------"
   echo "Nhập số câu muốn tụng (vd 1 hoặc 5 hoặc 174). Enter = câu đầu tiên. q = thoát"
@@ -271,13 +234,11 @@ lnk() {
 
   local start
   if [[ -z "${pick//[[:space:]]/}" ]]; then
-    # mặc định: lấy match đầu tiên
     start="$(echo "$matches" | head -n 1 | cut -d: -f1)"
   else
     [[ "$pick" =~ ^[0-9]+$ ]] || { echo "❌ Phải nhập số."; return 1; }
     start="$pick"
   fi
 
-  local end=$(( ((start - 1) / 12 + 1) * 12 ))
-  ln "$start" "$end"
+  ln "$start" $(( ((start - 1) / 12 + 1) * 12 ))
 }
